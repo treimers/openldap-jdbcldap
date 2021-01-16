@@ -23,12 +23,13 @@
 
 package com.octetstring.jdbcLdap.junit.sql;
 
-import junit.framework.*;
-import com.octetstring.jdbcLdap.sql.statements.JdbcLdapSelect;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+import javax.naming.directory.SearchControls;
+
 import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
-import com.octetstring.jdbcLdap.sql.*;
-import java.sql.*;
-import javax.naming.directory.*;
+import com.octetstring.jdbcLdap.sql.statements.JdbcLdapSelect;
 
 /**
  *Tests the parsing of a SELECT statement

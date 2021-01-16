@@ -20,13 +20,11 @@
 
 package com.octetstring.jdbcLdap.jndi;
 
-import java.sql.*;
-import javax.naming.*;
-import com.novell.ldap.util.*;
-import com.novell.ldap.*;
+import java.net.MalformedURLException;
 
-import java.io.FileNotFoundException;
-import java.net.*;
+import javax.naming.NamingException;
+
+import com.novell.ldap.LDAPException;
 
 /**
  *Translates a JndiException to a SQLException

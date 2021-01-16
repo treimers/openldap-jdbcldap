@@ -20,15 +20,20 @@
 
 package com.octetstring.jdbcLdap.sql;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import com.novell.ldap.LDAPMessageQueue;
 import com.novell.ldap.LDAPSearchResults;
-import com.octetstring.jdbcLdap.jndi.*;
-import com.octetstring.jdbcLdap.sql.statements.*;
-import com.octetstring.jdbcLdap.sql.*;
-import javax.naming.*;
+import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
+import com.octetstring.jdbcLdap.jndi.UnpackResults;
+import com.octetstring.jdbcLdap.sql.statements.JdbcLdapDelete;
+import com.octetstring.jdbcLdap.sql.statements.JdbcLdapInsert;
+import com.octetstring.jdbcLdap.sql.statements.JdbcLdapSelect;
+import com.octetstring.jdbcLdap.sql.statements.JdbcLdapSql;
+import com.octetstring.jdbcLdap.sql.statements.JdbcLdapUpdate;
+import com.octetstring.jdbcLdap.sql.statements.JdbcLdapUpdateEntry;
 
 /**
  * Implements the Statement interface

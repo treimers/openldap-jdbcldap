@@ -20,12 +20,13 @@
 
 package com.octetstring.jdbcLdap.sql.statements;
 
-import com.octetstring.jdbcLdap.jndi.*;
-import com.octetstring.jdbcLdap.sql.*;
-import java.sql.*;
-import java.util.*;
-import javax.naming.*;
-import javax.naming.directory.*;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import com.octetstring.jdbcLdap.jndi.Delete;
+import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
+import com.octetstring.jdbcLdap.sql.SqlStore;
 
 /**
  *Stores the information needed to process a SELECT statement

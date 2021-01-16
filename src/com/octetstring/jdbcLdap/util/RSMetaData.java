@@ -11,11 +11,7 @@ This class is used as a basis for not database data inside of RML pages.  Implem
 natively inside of an RML page.  Javadoc APIs won't apear here and can be found in the 
 <a href="http://java.sun.com/j2se/1.3/docs/api/java/sql/package-summary.html">JDBC javadocs</a>
 */
-
-
-
-import java.sql.*;
-import java.util.*;
+import java.sql.SQLException;
 
 public class RSMetaData implements java.sql.ResultSetMetaData
 {

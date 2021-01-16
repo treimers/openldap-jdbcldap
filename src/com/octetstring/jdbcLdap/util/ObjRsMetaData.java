@@ -6,9 +6,7 @@
  */
 package com.octetstring.jdbcLdap.util;
 
-import java.sql.*;
-
-import java.io.*;
+import java.io.Serializable;
 
 public class ObjRsMetaData extends RSMetaData implements Serializable {
 	String[] fieldNames;

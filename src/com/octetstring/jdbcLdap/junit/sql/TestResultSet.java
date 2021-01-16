@@ -20,18 +20,19 @@
 
 package com.octetstring.jdbcLdap.junit.sql;
 
-import junit.framework.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.sql.DriverManager;
+import java.sql.ResultSetMetaData;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import com.novell.ldap.LDAPMessageQueue;
-import com.novell.ldap.LDAPSearchResults;
+import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
+import com.octetstring.jdbcLdap.jndi.UnpackResults;
+import com.octetstring.jdbcLdap.sql.LdapResultSet;
 import com.octetstring.jdbcLdap.sql.statements.JdbcLdapSelect;
-import com.octetstring.jdbcLdap.jndi.*;
-import com.octetstring.jdbcLdap.sql.*;
-import java.sql.*;
-import javax.naming.directory.*;
-import javax.naming.*;
-import java.io.*;
-import java.util.*;
 
 /**
  *Tests the creation of a ResultSet
@@ -65,10 +66,10 @@ public class TestResultSet extends junit.framework.TestCase {
         String field;
         
         
-        LDAPMessageQueue enum = (LDAPMessageQueue) sel.executeQuery();
+        LDAPMessageQueue enumeration = (LDAPMessageQueue) sel.executeQuery();
         
         UnpackResults pack = new UnpackResults(con);
-        pack.unpackJldap(enum,sel.getRetrieveDN(),sel.getSqlStore().getFrom(),con.getBaseDN(),sel.getSqlStore().getRevFieldMap());
+        pack.unpackJldap(enumeration,sel.getRetrieveDN(),sel.getSqlStore().getFrom(),con.getBaseDN(),sel.getSqlStore().getRevFieldMap());
         
         LdapResultSet rs = new LdapResultSet(con,null,pack,sel.getBaseContext());
         
@@ -135,10 +136,10 @@ public class TestResultSet extends junit.framework.TestCase {
         String field;
         StringBuffer buf = new StringBuffer();
         
-        LDAPMessageQueue enum = (LDAPMessageQueue) sel.executeQuery();
+        LDAPMessageQueue enumeration = (LDAPMessageQueue) sel.executeQuery();
         
         UnpackResults pack = new UnpackResults(con);
-        pack.unpackJldap(enum,sel.getRetrieveDN(),sel.getSqlStore().getFrom(),con.getBaseDN(),sel.getSqlStore().getRevFieldMap());
+        pack.unpackJldap(enumeration,sel.getRetrieveDN(),sel.getSqlStore().getFrom(),con.getBaseDN(),sel.getSqlStore().getRevFieldMap());
         
         LdapResultSet rs = new LdapResultSet(con,null,pack,sel.getBaseContext());
         

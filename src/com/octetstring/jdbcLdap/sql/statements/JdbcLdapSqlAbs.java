@@ -20,13 +20,16 @@
 
 package com.octetstring.jdbcLdap.sql.statements;
 
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.LinkedList;
+
+import javax.naming.directory.DirContext;
+import javax.naming.directory.SearchControls;
+
 import com.novell.ldap.LDAPConnection;
-import com.octetstring.jdbcLdap.jndi.*;
-import com.octetstring.jdbcLdap.sql.*;
-import java.sql.*;
-import java.util.*;
-import javax.naming.*;
-import javax.naming.directory.*;
+import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
+import com.octetstring.jdbcLdap.sql.SqlStore;
 
 /**
  *This interface is used to wrap the internals of a statement

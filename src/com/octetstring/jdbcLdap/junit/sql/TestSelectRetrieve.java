@@ -19,16 +19,27 @@
  */
 
 package com.octetstring.jdbcLdap.junit.sql;
-import junit.framework.*;
-import com.octetstring.jdbcLdap.sql.statements.JdbcLdapSelect;
+import java.sql.DriverManager;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import javax.naming.NamingEnumeration;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.SearchResult;
+
+import com.novell.ldap.LDAPAttribute;
+import com.novell.ldap.LDAPAttributeSet;
+import com.novell.ldap.LDAPConnection;
+import com.novell.ldap.LDAPEntry;
+import com.novell.ldap.LDAPException;
+import com.novell.ldap.LDAPMessage;
+import com.novell.ldap.LDAPMessageQueue;
+import com.novell.ldap.LDAPResponse;
+import com.novell.ldap.LDAPSearchResult;
 import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
-import com.octetstring.jdbcLdap.sql.*;
-import java.sql.*;
-import javax.naming.directory.*;
-import javax.naming.*;
-import java.io.*;
-import java.util.*;
-import com.novell.ldap.*;
+import com.octetstring.jdbcLdap.sql.statements.JdbcLdapSelect;
 /**
  *Tests using a JdbcLdapSelect instance to retrieve results from a LDAP server
  *@author Marc Boorshtein, OctetString
@@ -213,9 +224,9 @@ public class TestSelectRetrieve extends junit.framework.TestCase {
     
     /**
      *Loads a NamingEnumeration into a LinkedList
-     *@param enum Search Results
+     *@param enumeration Search Results
      */
-    LinkedList load(NamingEnumeration enum) throws Exception {
+    LinkedList load(NamingEnumeration enumeration) throws Exception {
         LinkedList list = new LinkedList();
         LinkedList row;
         SearchResult res;
@@ -227,9 +238,9 @@ public class TestSelectRetrieve extends junit.framework.TestCase {
         String val;
         Object obj;
         
-        while (enum.hasMore()) {
+        while (enumeration.hasMore()) {
             row = new LinkedList();
-            res = (SearchResult) enum.next();
+            res = (SearchResult) enumeration.next();
             //System.out.println(res.getName());
             atts = (Attributes) res.getAttributes();
             

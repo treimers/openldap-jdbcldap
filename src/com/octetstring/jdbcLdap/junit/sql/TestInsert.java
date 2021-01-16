@@ -20,16 +20,18 @@
 
 package com.octetstring.jdbcLdap.junit.sql;
 
-import junit.framework.*;
-import com.octetstring.jdbcLdap.sql.statements.JdbcLdapSelect;
-import com.octetstring.jdbcLdap.jndi.*;
-import com.octetstring.jdbcLdap.sql.*;
-import com.octetstring.jdbcLdap.util.*;
-import com.octetstring.jdbcLdap.sql.statements.*;
-import java.sql.*;
-import javax.naming.directory.*;
-import com.novell.ldap.*;
-import com.novell.ldap.util.*;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+import com.novell.ldap.LDAPException;
+import com.novell.ldap.util.DN;
+import com.octetstring.jdbcLdap.jndi.Insert;
+import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
+import com.octetstring.jdbcLdap.sql.SqlStore;
+import com.octetstring.jdbcLdap.sql.statements.JdbcLdapInsert;
+import com.octetstring.jdbcLdap.util.LDIF;
 
 
 /**

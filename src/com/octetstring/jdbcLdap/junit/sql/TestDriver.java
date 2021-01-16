@@ -20,9 +20,11 @@
 
 package com.octetstring.jdbcLdap.junit.sql;
 
-import junit.framework.*;
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
 /**
  *Tests The loading of drivers and the creation of connections

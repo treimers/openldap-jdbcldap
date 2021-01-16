@@ -53,10 +53,10 @@ public class Update {
 		
 		try {
 			if (update.getSearchScope() != 0) {
-				LDAPSearchResults enum = res.searchUpInsJldap(update);
+				LDAPSearchResults enumeration = res.searchUpInsJldap(update);
 				//System.out.println("enum.hasMore : " + enum.hasMore());
-				while (enum.hasMore()) {
-					seres =  enum.next();
+				while (enumeration.hasMore()) {
+					seres =  enumeration.next();
 					buf.setLength(0);
 					
 					name = seres.getDN();

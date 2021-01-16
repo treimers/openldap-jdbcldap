@@ -21,8 +21,8 @@
 package com.octetstring.jdbcLdap.junit.sql;
 
 import java.sql.SQLException;
-import java.util.*;
-import junit.framework.*;
+import java.util.LinkedList;
+
 import com.octetstring.jdbcLdap.sql.SqlToLdap;
 /**
  *Tests the conversion from SQL style to LDAP style filters

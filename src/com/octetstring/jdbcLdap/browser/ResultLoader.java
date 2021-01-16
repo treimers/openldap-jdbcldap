@@ -13,21 +13,24 @@
 ******************************************************************************/
 package com.octetstring.jdbcLdap.browser;
 
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.*;
-import org.eclipse.jface.viewers.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 
-import java.sql.*;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 
 import com.novell.ldap.LDAPDN;
 import com.novell.ldap.util.DN;
-import com.novell.ldap.util.RDN;
-import com.octetstring.jdbcLdap.jndi.*;
-
-import java.util.*;
-import org.eclipse.jface.dialogs.MessageDialog;
 
 
 /**

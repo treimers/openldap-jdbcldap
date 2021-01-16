@@ -54,9 +54,9 @@ public class Delete {
 		else {
 			try {
 				
-				LDAPSearchResults enum = res.searchUpInsJldap(del);
-				while (enum.hasMore()) {
-					LDAPEntry entry = enum.next(); 
+				LDAPSearchResults enumeration = res.searchUpInsJldap(del);
+				while (enumeration.hasMore()) {
+					LDAPEntry entry = enumeration.next(); 
 					con.delete(entry.getDN());
 					count++;
 				}

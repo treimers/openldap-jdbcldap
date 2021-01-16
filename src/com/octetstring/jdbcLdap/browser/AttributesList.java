@@ -13,12 +13,15 @@
 ******************************************************************************/
 package com.octetstring.jdbcLdap.browser;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import java.sql.*;
-import java.util.*;
-
-import com.octetstring.jdbcLdap.jndi.*;
 /**
  * @author Marc Boorshtein
  *

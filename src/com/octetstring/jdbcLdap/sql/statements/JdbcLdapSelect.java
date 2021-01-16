@@ -20,16 +20,14 @@
 
 package com.octetstring.jdbcLdap.sql.statements;
 
-import com.octetstring.jdbcLdap.jndi.*;
-import com.octetstring.jdbcLdap.sql.*;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.StringTokenizer;
+
+import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
+import com.octetstring.jdbcLdap.jndi.RetrieveResults;
+import com.octetstring.jdbcLdap.sql.SqlStore;
 import com.octetstring.jdbcLdap.util.TableDef;
-
-import java.io.StreamTokenizer;
-import java.sql.*;
-import java.util.*;
-
-import javax.naming.*;
-import javax.naming.directory.*;
 
 /**
  *Stores the information needed to process a SELECT statement

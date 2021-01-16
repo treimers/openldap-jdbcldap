@@ -13,15 +13,22 @@
 ******************************************************************************/
 package com.octetstring.jdbcLdap.browser;
 
-import com.novell.ldap.*;
-import com.octetstring.jdbcLdap.jndi.*;
-
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+
+import com.novell.ldap.LDAPException;
+import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
 /**
  * @author Marc Boorshtein
  *

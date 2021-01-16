@@ -13,16 +13,11 @@
 ******************************************************************************/
 package com.octetstring.jdbcLdap.browser;
 
+import java.sql.SQLException;
+import java.util.LinkedList;
+
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.*;
-import org.eclipse.jface.viewers.*;
-
-import java.sql.*;
-
-import com.octetstring.jdbcLdap.jndi.*;
-import java.util.*;
 
 /**
  * @author Marc Boorshtein

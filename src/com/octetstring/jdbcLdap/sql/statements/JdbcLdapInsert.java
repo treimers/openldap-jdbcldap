@@ -20,15 +20,22 @@
 
 package com.octetstring.jdbcLdap.sql.statements;
 
-import com.novell.ldap.LDAPDN;
-import com.octetstring.jdbcLdap.jndi.*;
-import com.octetstring.jdbcLdap.sql.*;
-import java.sql.*;
-import java.util.*;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.StringTokenizer;
 
-import javax.naming.*;
-import javax.naming.directory.*;
-import com.octetstring.jdbcLdap.util.*;
+import javax.naming.directory.DirContext;
+
+import com.novell.ldap.LDAPDN;
+import com.octetstring.jdbcLdap.jndi.Insert;
+import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
+import com.octetstring.jdbcLdap.sql.SqlStore;
+import com.octetstring.jdbcLdap.util.AddPattern;
+import com.octetstring.jdbcLdap.util.Pair;
+import com.octetstring.jdbcLdap.util.TableDef;
 
 /**
  *Stores the information needed to process a SELECT statement

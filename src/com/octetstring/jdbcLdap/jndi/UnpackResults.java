@@ -20,15 +20,28 @@
 
 package com.octetstring.jdbcLdap.jndi;
 
-import javax.naming.*;
-import javax.naming.directory.*;
-import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
-import java.util.*;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.sql.*;
-import com.novell.ldap.*;
-import com.novell.ldap.util.*;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import javax.naming.NamingEnumeration;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.SearchResult;
+
+import com.novell.ldap.LDAPAttribute;
+import com.novell.ldap.LDAPAttributeSet;
+import com.novell.ldap.LDAPDN;
+import com.novell.ldap.LDAPEntry;
+import com.novell.ldap.LDAPException;
+import com.novell.ldap.LDAPMessage;
+import com.novell.ldap.LDAPMessageQueue;
+import com.novell.ldap.LDAPReferralException;
+import com.novell.ldap.LDAPResponse;
+import com.novell.ldap.LDAPSearchResult;
+import com.novell.ldap.LDAPSearchResultReference;
+import com.novell.ldap.LDAPSearchResults;
 import com.novell.ldap.util.Base64;
 
 /**

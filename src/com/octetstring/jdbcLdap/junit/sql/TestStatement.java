@@ -19,15 +19,18 @@
  */
 
 package com.octetstring.jdbcLdap.junit.sql;
-import junit.framework.*;
-import com.octetstring.jdbcLdap.sql.statements.JdbcLdapSelect;
-import com.octetstring.jdbcLdap.jndi.*;
-import com.octetstring.jdbcLdap.sql.*;
-import java.sql.*;
-import javax.naming.directory.*;
-import javax.naming.*;
-import java.io.*;
-import java.util.*;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
+import com.octetstring.jdbcLdap.sql.JdbcLdapStatement;
 /**
  *Tests the use of Statements and PreparedStatement interfaces
  */

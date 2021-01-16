@@ -20,14 +20,23 @@
 
 package com.octetstring.jdbcLdap.sql;
 
-import java.sql.*;
-import com.octetstring.jdbcLdap.sql.statements.JdbcLdapSelect;
-import com.octetstring.jdbcLdap.jndi.*;
-
-import java.io.*;
-import java.util.*;
-import java.net.*;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringBufferInputStream;
+import java.io.StringReader;
 import java.math.BigDecimal;
+import java.net.URL;
+import java.sql.NClob;
+import java.sql.RowId;
+import java.sql.SQLException;
+import java.sql.SQLXML;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
+import com.octetstring.jdbcLdap.jndi.SQLNamingException;
+import com.octetstring.jdbcLdap.jndi.UnpackResults;
 
 /**
  *Stores the result from a query

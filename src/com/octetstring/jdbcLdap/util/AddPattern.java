@@ -6,7 +6,6 @@
  */
 package com.octetstring.jdbcLdap.util;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**

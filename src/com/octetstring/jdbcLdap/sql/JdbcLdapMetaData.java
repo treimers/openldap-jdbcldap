@@ -20,9 +20,10 @@
 
 package com.octetstring.jdbcLdap.sql;
 
-import java.sql.*;
-import java.util.*;
-import com.octetstring.jdbcLdap.jndi.*;
+import java.sql.SQLException;
+import java.sql.Types;
+
+import com.octetstring.jdbcLdap.jndi.UnpackResults;
 
 /**
  *Holds the metadata of the table

@@ -12,7 +12,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.util.HashMap;
 
-import com.novell.ldap.LDAPException;
 import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
 import com.octetstring.jdbcLdap.util.AddPattern;
 import com.octetstring.jdbcLdap.util.LDIF;

@@ -19,14 +19,15 @@
  */
 
 package com.octetstring.jdbcLdap.sql.statements;
-import com.octetstring.jdbcLdap.jndi.*;
-import com.octetstring.jdbcLdap.sql.*;
-import com.octetstring.jdbcLdap.util.TableDef;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.StringTokenizer;
 
-import java.sql.*;
-import java.util.*;
-import javax.naming.*;
-import javax.naming.directory.*;
+import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
+import com.octetstring.jdbcLdap.jndi.Update;
+import com.octetstring.jdbcLdap.sql.SqlStore;
+import com.octetstring.jdbcLdap.util.TableDef;
 /**
  *Processes an SQL UPDATE statement
  *@author Marc Boorshtein, OctetString

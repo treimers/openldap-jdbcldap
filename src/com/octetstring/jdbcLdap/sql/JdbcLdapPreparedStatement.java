@@ -19,17 +19,21 @@
  */
 
 package com.octetstring.jdbcLdap.sql;
-import java.sql.*;
-import java.util.HashMap;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.sql.NClob;
+import java.sql.RowId;
+import java.sql.SQLException;
+import java.sql.SQLXML;
 
 import com.novell.ldap.LDAPMessageQueue;
 import com.novell.ldap.LDAPSearchResults;
-import com.octetstring.jdbcLdap.jndi.*;
-import com.octetstring.jdbcLdap.jndi.UnpackResults;
-import com.octetstring.jdbcLdap.sql.statements.*;
-import com.octetstring.jdbcLdap.sql.*;
-import javax.naming.*;
-import java.io.*;
+import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
+import com.octetstring.jdbcLdap.sql.statements.JdbcLdapSelect;
 /**
  *Parses and manages a prepared statement to the directory
  *@author Marc Boorshtein, OctetString

@@ -21,9 +21,10 @@
 package com.octetstring.jdbcLdap.sql;
 
 import java.sql.SQLException;
-import java.util.*;
-
-import com.octetstring.jdbcLdap.jndi.SQLNamingException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Stack;
 
 /**
  *

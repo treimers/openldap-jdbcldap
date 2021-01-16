@@ -7,7 +7,6 @@
 package com.octetstring.jdbcLdap.util;
 
 import java.lang.reflect.Field;
-import java.sql.DatabaseMetaData;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
