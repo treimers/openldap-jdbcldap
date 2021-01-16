@@ -20,379 +20,375 @@ import java.io.*;
 /**
  * @author mlb
  *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
+ *         To change the template for this generated type comment go to
+ *         Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class LDIF {
 
-	/** The DN */
-	public static final String DN = "dn";
+    /** The DN */
+    public static final String DN = "dn";
 
-	/** The seperator of the attribs and val */
-	public static final String SEP = ": ";
-	/** The seperator of the attribs and binary val */
-	public static final String BIN_SEP = ":: ";
+    /** The seperator of the attribs and val */
+    public static final String SEP = ": ";
+    /** The seperator of the attribs and binary val */
+    public static final String BIN_SEP = ":: ";
 
-	/** Stores The ldif */
-	LinkedList ldif;
+    /** Stores The ldif */
+    LinkedList ldif;
 
-	/** Debug mode */
-	boolean debug;
+    /** Debug mode */
+    boolean debug;
 
-	public LDIF() {
-		this.ldif = new LinkedList();
-	}
+    public LDIF() {
+        this.ldif = new LinkedList();
+    }
 
-	/**
-	 * Loads LDIF from a string
-	 * @param ldif The ldif to load
-	 */
-	public LDIF(String ldif, boolean debug) throws Exception {
-		this.debug = debug;
-		StringReader r = new StringReader(ldif);
-		BufferedReader in = new BufferedReader(r);
-		String attr=null, val=null;
+    /**
+     * Loads LDIF from a string
+     * 
+     * @param ldif
+     *            The ldif to load
+     */
+    public LDIF(String ldif, boolean debug) throws Exception {
+        this.debug = debug;
+        StringReader r = new StringReader(ldif);
+        BufferedReader in = new BufferedReader(r);
+        String attr = null, val = null;
 
-		String line;
+        String line;
 
-		this.ldif = new LinkedList();
+        this.ldif = new LinkedList();
 
-		HashMap entry = null;
-		LinkedList attrib;
+        HashMap entry = null;
+        LinkedList attrib;
 
-		String sep;
+        String sep;
 
-		
-		while ((line = in.readLine()) != null) {
-			//don't do anything if there is a blank line
-			if (line.trim().length() != 0) {
-				//split the line 
+        while ((line = in.readLine()) != null) {
+            // don't do anything if there is a blank line
+            if (line.trim().length() != 0) {
+                // split the line
 
-				try {
-					attr = line.substring(0, line.indexOf(SEP)).trim();
-					val = line.substring(line.indexOf(SEP) + SEP.length());
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace(System.out);
-					System.out.println("Error on line : " + line);
-					System.exit(1);
-				}
+                try {
+                    attr = line.substring(0, line.indexOf(SEP)).trim();
+                    val = line.substring(line.indexOf(SEP) + SEP.length());
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace(System.out);
+                    System.out.println("Error on line : " + line);
+                    System.exit(1);
+                }
 
-				//if this is a dn, we need to create a new entry
-				if (attr.equalsIgnoreCase(DN)) {
-					entry = new HashMap();
-					this.ldif.add(new Entry(val, entry));
+                // if this is a dn, we need to create a new entry
+                if (attr.equalsIgnoreCase(DN)) {
+                    entry = new HashMap();
+                    this.ldif.add(new Entry(val, entry));
 
-				} else {
-					attrib = (LinkedList) entry.get(attr);
+                } else {
+                    attrib = (LinkedList) entry.get(attr);
 
-					//if it doesn't exist, add it
-					if (attrib == null) {
-						attrib = new LinkedList();
-						entry.put(attr, attrib);
-					}
+                    // if it doesn't exist, add it
+                    if (attrib == null) {
+                        attrib = new LinkedList();
+                        entry.put(attr, attrib);
+                    }
 
-					attrib.add(val);
-				}
+                    attrib.add(val);
+                }
 
-			}
-		}
-	}
+            }
+        }
+    }
 
-	/**
-	 * Loads and ldif from a result set.  each row is an entry
-	 * @param rs the ResultSet
-	 */
-	public LDIF(ResultSet rs, String dnField, boolean debug) throws Exception {
-		this.debug = debug;
-		String dn;
-		String attr, val;
-		StringTokenizer tok;
+    /**
+     * Loads and ldif from a result set. each row is an entry
+     * 
+     * @param rs
+     *            the ResultSet
+     */
+    public LDIF(ResultSet rs, String dnField, boolean debug) throws Exception {
+        this.debug = debug;
+        String dn;
+        String attr, val;
+        StringTokenizer tok;
 
-		this.ldif = new LinkedList();
+        this.ldif = new LinkedList();
 
-		HashMap entry = null;
-		LinkedList attrib;
+        HashMap entry = null;
+        LinkedList attrib;
 
-		//each row is an entry
-		while (rs.next()) {
-			//create an entry
-			entry = new HashMap();
+        // each row is an entry
+        while (rs.next()) {
+            // create an entry
+            entry = new HashMap();
 
-			dn = rs.getString(dnField);
-			ldif.add(new Entry(dn, entry));
+            dn = rs.getString(dnField);
+            ldif.add(new Entry(dn, entry));
 
-			ResultSetMetaData rsmd = rs.getMetaData();
-			for (int i = 1; i <= rsmd.getColumnCount(); i++) {
-				//get the attribute and value
-				attr = rsmd.getColumnName(i);
+            ResultSetMetaData rsmd = rs.getMetaData();
+            for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+                // get the attribute and value
+                attr = rsmd.getColumnName(i);
 
-				//don't want to check the dn field
-				val = rs.getString(attr);
-				if (!attr.equals(dnField) && val.trim().length() != 0) {
-					
+                // don't want to check the dn field
+                val = rs.getString(attr);
+                if (!attr.equals(dnField) && val.trim().length() != 0) {
 
-					//create the attribute
-					attrib = new LinkedList();
-					entry.put(attr, attrib);
+                    // create the attribute
+                    attrib = new LinkedList();
+                    entry.put(attr, attrib);
 
-					//if the entry is a concatinated field, primarily for the jdbcLdapDrivers
-					if (val.charAt(0) == '['
-						&& val.charAt(val.length() - 1) == ']') {
-						tok =
-							new StringTokenizer(
-								val.substring(1, val.length() - 1),
-								"][",
-								false);
-						while (tok.hasMoreTokens()) {
-							attrib.add(tok.nextToken());
-						}
+                    // if the entry is a concatinated field, primarily for the jdbcLdapDrivers
+                    if (val.charAt(0) == '[' && val.charAt(val.length() - 1) == ']') {
+                        tok = new StringTokenizer(val.substring(1, val.length() - 1), "][", false);
+                        while (tok.hasMoreTokens()) {
+                            attrib.add(tok.nextToken());
+                        }
 
-					} else {
-						attrib.add(val);
-					}
-				}
-			}
-		}
-	}
+                    } else {
+                        attrib.add(val);
+                    }
+                }
+            }
+        }
+    }
 
-	public boolean compareLdif(LDIF o, LDIF diffLdif) {
-		if (!(o instanceof LDIF)) {
-			return false;
-		}
+    public boolean compareLdif(LDIF o, LDIF diffLdif) {
+        if (!(o instanceof LDIF)) {
+            return false;
+        }
 
-		LinkedList ldif1, ldif2, diff;
-		String tmpval;
-		ldif1 = (LinkedList) ldif.clone();
-		ldif2 = (LinkedList) ((LDIF) o).ldif.clone();
-		diff = new LinkedList();
+        LinkedList ldif1, ldif2, diff;
+        String tmpval;
+        ldif1 = (LinkedList) ldif.clone();
+        ldif2 = (LinkedList) ((LDIF) o).ldif.clone();
+        diff = new LinkedList();
 
-		boolean match = true;
-		boolean equals = true;
+        boolean match = true;
+        boolean equals = true;
 
-		if (debug) {
+        if (debug) {
 
-			System.out.println("ldif 1: " + ldif1.size());
-			System.out.println("ldif 2: " + ldif2.size());
-		}
+            System.out.println("ldif 1: " + ldif1.size());
+            System.out.println("ldif 2: " + ldif2.size());
+        }
 
-		Entry ent, ent2 = null;
-		String dn = null;
-		Iterator entries2 = null;
-		Iterator entries = ldif1.iterator();
-		boolean found = false;
-		LinkedList ts1, ts2;
-		Iterator attribsKeys;
-		Iterator tsi, it,itat;
-		HashMap attribs, attribs2;
-		String val;
-		String attrib1, attrib2, val2;
-		while (entries.hasNext()) {
-			ent = (Entry) entries.next();
-			dn = ent.getDn();
-			//System.out.println("In DN :" + dn);
-			entries2 = ldif2.iterator();
-			found = false;
-			match = true;
-			while (entries2.hasNext()) {
-				ent2 = (Entry) entries2.next();
+        Entry ent, ent2 = null;
+        String dn = null;
+        Iterator entries2 = null;
+        Iterator entries = ldif1.iterator();
+        boolean found = false;
+        LinkedList ts1, ts2;
+        Iterator attribsKeys;
+        Iterator tsi, it, itat;
+        HashMap attribs, attribs2;
+        String val;
+        String attrib1, attrib2, val2;
+        while (entries.hasNext()) {
+            ent = (Entry) entries.next();
+            dn = ent.getDn();
+            // System.out.println("In DN :" + dn);
+            entries2 = ldif2.iterator();
+            found = false;
+            match = true;
+            while (entries2.hasNext()) {
+                ent2 = (Entry) entries2.next();
 
-				if (ent2.getDn().equalsIgnoreCase(dn)) {
-					found = true;
-					//System.out.println("removing: " + ent2.getDn() + "--" + ldif2.size());
-					ldif2.remove(ent2);
-					//System.out.println("still has : " + ldif2.contains(ent2) + " -- " + ldif2.size());
+                if (ent2.getDn().equalsIgnoreCase(dn)) {
+                    found = true;
+                    // System.out.println("removing: " + ent2.getDn() + "--" + ldif2.size());
+                    ldif2.remove(ent2);
+                    // System.out.println("still has : " + ldif2.contains(ent2) + " -- " +
+                    // ldif2.size());
 
-					break;
-				}
-			}
+                    break;
+                }
+            }
 
-			if (!found) {
-				System.out.println("DN " + dn + " not found");
-				match = false;
-			}
+            if (!found) {
+                System.out.println("DN " + dn + " not found");
+                match = false;
+            }
 
-			attribs = ent.getAtts();
-			attribs2 = null;
-			if (found) attribs2 = (HashMap) ent2.getAtts().clone();
+            attribs = ent.getAtts();
+            attribs2 = null;
+            if (found)
+                attribs2 = (HashMap) ent2.getAtts().clone();
 
-			attribsKeys = attribs.keySet().iterator();
-			while (found && attribsKeys.hasNext()) {
-				attrib1 = (String) attribsKeys.next();
-				if (debug)
-					System.out.println("Looking for : " + attrib1);
-				
-				
-				ts1 = (LinkedList) attribs.get(attrib1);
-				itat = attribs2.keySet().iterator();
-				ts2 = null;
-				
-				while (itat.hasNext()) {
-						tmpval = (String) itat.next();
-						if (tmpval.equalsIgnoreCase(attrib1)) {
-							ts2 = ((LinkedList) attribs2.remove(tmpval));
-							ts2 = (LinkedList) ts2.clone();
-							break;		
-						}
-				}
-				
-				if (ts2 == null) {
-					match = false;
-					System.out.println("FAILED : " + dn);
-					break;
-				}
-				
+            attribsKeys = attribs.keySet().iterator();
+            while (found && attribsKeys.hasNext()) {
+                attrib1 = (String) attribsKeys.next();
+                if (debug)
+                    System.out.println("Looking for : " + attrib1);
 
-				tsi = ts1.iterator();
-				while (tsi.hasNext()) {
-					val = (String) tsi.next();
-					if (debug) {
+                ts1 = (LinkedList) attribs.get(attrib1);
+                itat = attribs2.keySet().iterator();
+                ts2 = null;
 
-						System.out.println("\tAttib : " + attrib1);
-						System.out.println("\tVal : " + val);
-						
-						
+                while (itat.hasNext()) {
+                    tmpval = (String) itat.next();
+                    if (tmpval.equalsIgnoreCase(attrib1)) {
+                        ts2 = ((LinkedList) attribs2.remove(tmpval));
+                        ts2 = (LinkedList) ts2.clone();
+                        break;
+                    }
+                }
 
-					}
-					found = false;
-					it = ts2.iterator();
-					while (it.hasNext()) {
-						val2 = (String) it.next();
-						if (val2.equalsIgnoreCase(val)) {
-							found = true;
-							it.remove();
-							tsi.remove();
-							break;
-						}
-					}
-					if (debug) System.out.println("\tContains : " + found);
-					if (!found) {
-						System.out.println("FAILED : " + dn);
-					
-						match = false;
-					}
-				}
+                if (ts2 == null) {
+                    match = false;
+                    System.out.println("FAILED : " + dn);
+                    break;
+                }
 
-				if (debug) {
-					System.out.println("ts2.size() : " + ts2.size());
-					System.out.println("ts1.size() : " + ts1.size());
-				}
-				if (ts2.size() != 0) {
-					System.out.println("FAILED : " + dn);
-					match = false;
-				}
+                tsi = ts1.iterator();
+                while (tsi.hasNext()) {
+                    val = (String) tsi.next();
+                    if (debug) {
 
-			}
+                        System.out.println("\tAttib : " + attrib1);
+                        System.out.println("\tVal : " + val);
 
-			if (debug)
-				System.out.println("attribs2.size() : " + (attribs2 != null ? Integer.toString(attribs2.size()) : "null"));
-			if (attribs2 == null || attribs2.size() != 0) {
-				System.out.println("FAILED : " + dn);
-				match = false;
-			}
+                    }
+                    found = false;
+                    it = ts2.iterator();
+                    while (it.hasNext()) {
+                        val2 = (String) it.next();
+                        if (val2.equalsIgnoreCase(val)) {
+                            found = true;
+                            it.remove();
+                            tsi.remove();
+                            break;
+                        }
+                    }
+                    if (debug)
+                        System.out.println("\tContains : " + found);
+                    if (!found) {
+                        System.out.println("FAILED : " + dn);
 
-			if (!match) {
-				System.out.println("FAILED : " + dn);
-				equals = false;
-				diff.add(ent);
-			}
+                        match = false;
+                    }
+                }
 
-		}
+                if (debug) {
+                    System.out.println("ts2.size() : " + ts2.size());
+                    System.out.println("ts1.size() : " + ts1.size());
+                }
+                if (ts2.size() != 0) {
+                    System.out.println("FAILED : " + dn);
+                    match = false;
+                }
 
-		if (debug)
-			System.out.println("ldif2.size() : " + ldif2.size());
-		if (ldif2.size() != 0) {
-			entries2 = ldif2.iterator();
-			while (entries2.hasNext()) {
-				ent2 = (Entry) entries2.next();
-				System.out.println("FAILED : " + (dn != null ? dn : ""));
-				diff.add(ent2);
-			}
-			equals = false;
-		}
+            }
 
-		if (!equals)
-			diffLdif.ldif = diff;
+            if (debug)
+                System.out.println(
+                        "attribs2.size() : " + (attribs2 != null ? Integer.toString(attribs2.size()) : "null"));
+            if (attribs2 == null || attribs2.size() != 0) {
+                System.out.println("FAILED : " + dn);
+                match = false;
+            }
 
-		return equals;
-		//return ((LDIF) o).ldif.equals(this.ldif);
+            if (!match) {
+                System.out.println("FAILED : " + dn);
+                equals = false;
+                diff.add(ent);
+            }
 
-	}
+        }
 
-	public String toString() {
-		StringBuffer ldif = new StringBuffer();
+        if (debug)
+            System.out.println("ldif2.size() : " + ldif2.size());
+        if (ldif2.size() != 0) {
+            entries2 = ldif2.iterator();
+            while (entries2.hasNext()) {
+                ent2 = (Entry) entries2.next();
+                System.out.println("FAILED : " + (dn != null ? dn : ""));
+                diff.add(ent2);
+            }
+            equals = false;
+        }
 
-		String dn, attrib;
+        if (!equals)
+            diffLdif.ldif = diff;
 
-		Iterator entries = this.ldif.iterator();
-		HashMap entry;
+        return equals;
+        // return ((LDIF) o).ldif.equals(this.ldif);
 
-		Iterator atts;
-		Iterator vals;
+    }
 
-		LinkedList ts;
+    public String toString() {
+        StringBuffer ldif = new StringBuffer();
 
-		Entry ent;
+        String dn, attrib;
 
-		while (entries.hasNext()) {
-			ent = (Entry) entries.next();
-			dn = ent.getDn();
-			ldif.append("dn: ").append(dn).append('\n');
-			entry = ent.getAtts();
+        Iterator entries = this.ldif.iterator();
+        HashMap entry;
 
-			atts = entry.keySet().iterator();
-			while (atts.hasNext()) {
-				attrib = (String) atts.next();
+        Iterator atts;
+        Iterator vals;
 
-				ts = (LinkedList) entry.get(attrib);
-				vals = ts.iterator();
-				while (vals.hasNext()) {
+        LinkedList ts;
 
-					ldif.append(attrib).append(SEP).append(vals.next()).append(
-						'\n');
-				}
-			}
+        Entry ent;
 
-			ldif.append('\n');
-		}
+        while (entries.hasNext()) {
+            ent = (Entry) entries.next();
+            dn = ent.getDn();
+            ldif.append("dn: ").append(dn).append('\n');
+            entry = ent.getAtts();
 
-		return ldif.toString();
-	}
+            atts = entry.keySet().iterator();
+            while (atts.hasNext()) {
+                attrib = (String) atts.next();
+
+                ts = (LinkedList) entry.get(attrib);
+                vals = ts.iterator();
+                while (vals.hasNext()) {
+
+                    ldif.append(attrib).append(SEP).append(vals.next()).append('\n');
+                }
+            }
+
+            ldif.append('\n');
+        }
+
+        return ldif.toString();
+    }
 }
 
 class Compare implements Comparator {
-	public int compare(Object v1, Object v2) {
-		return ((String) v1).compareTo(v2);
-	}
+    public int compare(Object v1, Object v2) {
+        return ((String) v1).compareTo(v2);
+    }
 }
 
 class Entry {
-	String dn;
-	HashMap atts;
+    String dn;
+    HashMap atts;
 
-	public Entry(String dn, HashMap atts) {
-		this.dn = dn;
-		this.atts = atts;
+    public Entry(String dn, HashMap atts) {
+        this.dn = dn;
+        this.atts = atts;
 
-	}
+    }
 
-	/**
-	 * @return
-	 */
-	public HashMap getAtts() {
-		return atts;
-	}
+    /**
+     * @return
+     */
+    public HashMap getAtts() {
+        return atts;
+    }
 
-	/**
-	 * @return
-	 */
-	public String getDn() {
-		return dn;
-	}
+    /**
+     * @return
+     */
+    public String getDn() {
+        return dn;
+    }
 
-	public boolean equals(Object o) {
-		Entry e = (Entry) o;
-		return e.getDn().equalsIgnoreCase(this.dn);
-	}
+    public boolean equals(Object o) {
+        Entry e = (Entry) o;
+        return e.getDn().equalsIgnoreCase(this.dn);
+    }
 
 }
