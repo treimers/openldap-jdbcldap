@@ -6,8 +6,9 @@
 	<target description="Initializes properties" name="init">
 		<property name="example" value="example" />
 		<property name="src" value="src" />
-		<property name="classes" value="classes" />
-		<property name="jars" value="bin" />
+		<property name="target" value="target" />
+		<property name="classes" value="${target}/classes" />
+		<property name="jars" value="${target}" />
 		<property name="lib" value="lib" />
 		<property name="docsdir" value="docs" />
 		<property name="reports.tests" value="testResults" />
@@ -15,8 +16,10 @@
 	</target>
 
 	<target depends="init" name="build" description="Builds the drivers">
+		<mkdir dir="${target}" />
 		<mkdir dir="${classes}" />
-		<javac source="1.4" target="1.4" destdir="${classes}" includes="com/octetstring/**" srcdir="${src}" debug="true">
+		<javac includeantruntime="false" source="1.8" target="1.8" destdir="${classes}" includes="com/octetstring/**" srcdir="${src}" debug="true">
+			<!-- compilerarg value="-Xlint:unchecked" / -->
 			<classpath>
 				<pathelement location="${lib}/junit-4.12.jar" />
 				<pathelement location="${lib}/ldap.jar" />
@@ -28,6 +31,7 @@
 	</target>
 
 	<target depends="init" description="jars the classes into the bin directory and copys the jar to the lib directory" name="jar">
+		<mkdir dir="${target}" />
 		<mkdir dir="${jars}" />
 		<delete file="${jars}/jdbcLdap.jar" />
 		<jar jarfile="${jars}/jdbcLdap.jar">
@@ -35,7 +39,7 @@
 			<fileset dir="${src}" includes="**/*.java" />
 		</jar>
 		<copy file="${jars}/jdbcLdap.jar" todir="${lib}" />
-		<zip destfile="jdbcLdap.zip">
+		<zip destfile="${target}/jdbcLdap.zip">
 			<zipfileset dir="lib" prefix="lib" />
 			<zipfileset dir="src" prefix="src" />
 			<zipfileset dir="." includes="build.xml, COPYRIGHT, LICENSE, README.md" />

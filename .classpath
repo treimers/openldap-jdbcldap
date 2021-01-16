@@ -7,5 +7,5 @@
 	<classpathentry kind="lib" path="lib/org.eclipse.jface_3.12.2.v20170113-2113.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.swt_3.105.3.v20170228-0512.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.swt.cocoa.macosx.x86_64_3.105.3.v20170228-0512.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>

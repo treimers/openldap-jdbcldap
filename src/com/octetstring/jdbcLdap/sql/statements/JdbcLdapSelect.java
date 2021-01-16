@@ -237,7 +237,7 @@ public class JdbcLdapSelect extends com.octetstring.jdbcLdap.sql.statements.Jdbc
             this.scope = scope.intValue();
         }
 
-        System.out.println("Sort by : " + this.sortBy);
+        // System.out.println("Sort by : " + this.sortBy );
 
         sqlStore = new SqlStore(SQL);
         sqlStore.setOrderby(this.sortBy);

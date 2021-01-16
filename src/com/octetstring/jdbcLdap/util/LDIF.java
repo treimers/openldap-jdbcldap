@@ -13,9 +13,15 @@
  ******************************************************************************/
 package com.octetstring.jdbcLdap.util;
 
-import java.util.*;
-import java.sql.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.StringReader;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.StringTokenizer;
 
 /**
  * @author mlb
@@ -353,12 +359,6 @@ public class LDIF {
         }
 
         return ldif.toString();
-    }
-}
-
-class Compare implements Comparator {
-    public int compare(Object v1, Object v2) {
-        return ((String) v1).compareTo(v2);
     }
 }
 

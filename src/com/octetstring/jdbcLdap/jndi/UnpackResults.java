@@ -22,15 +22,11 @@ package com.octetstring.jdbcLdap.jndi;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import javax.naming.NamingEnumeration;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.SearchResult;
-
 import com.novell.ldap.LDAPAttribute;
+import com.novell.ldap.LDAPAttributeSchema;
 import com.novell.ldap.LDAPAttributeSet;
 import com.novell.ldap.LDAPDN;
 import com.novell.ldap.LDAPEntry;
@@ -39,10 +35,10 @@ import com.novell.ldap.LDAPMessage;
 import com.novell.ldap.LDAPMessageQueue;
 import com.novell.ldap.LDAPReferralException;
 import com.novell.ldap.LDAPResponse;
+import com.novell.ldap.LDAPSchema;
 import com.novell.ldap.LDAPSearchResult;
 import com.novell.ldap.LDAPSearchResultReference;
 import com.novell.ldap.LDAPSearchResults;
-import com.novell.ldap.util.Base64;
 
 /**
  * Takes a JNDI Naming Enumeration and places it into a ArrayList of HasMap's
@@ -58,7 +54,9 @@ public class UnpackResults {
     static final String HEX_LESS = "\\3C";
     static final String HEX_MORE = "\\3E";
     static final String HEX_SEMI_COLON = "\\3B";
-    static final HashMap HEX_TO_STRING;
+    static final HashMap<String, String> HEX_TO_STRING;
+
+    static int debugCount = 0;
 
     /** DN attribute name */
     static final String DN_ATT = "DN";
@@ -67,22 +65,24 @@ public class UnpackResults {
     JndiLdapConnection con;
 
     /** List of Field Names */
-    HashMap names;
+    HashMap<String, FieldStore> names;
 
     /** List of rows */
-    ArrayList rows;
+    // ArrayList rows;
+    ArrayList<HashMap<String, Object>> rows;
+
     LDAPMessageQueue queue;
     protected boolean dn;
     protected String fromContext;
     protected StringBuffer buff;
     protected LDAPEntry entry;
 
-    ArrayList fieldNames;
-    ArrayList fieldTypes;
+    ArrayList<String> fieldNames;
+    ArrayList<Integer> fieldTypes;
 
     private boolean hasMoreEntries;
     private LDAPSearchResults searchResults;
-    private HashMap revMap;
+    private HashMap<String, String> revMap;
 
     static {
         HEX_TO_STRING = new HashMap();
@@ -105,69 +105,67 @@ public class UnpackResults {
 
     /** Returns the field names of the result */
     public ArrayList getFieldNames() {
-        /*
-         * ArrayList fields = new ArrayList(); Iterator it = names.keySet().iterator();
-         * FieldStore f; int i; StringBuffer buf = new StringBuffer(); while
-         * (it.hasNext()) { f = (FieldStore) names.get(it.next()); if (f.numVals > 0) {
-         * for (i = 0; i < f.numVals; i++) { buf.setLength(0); fields.add(
-         * buf.append(f.name).append('_').append(i).toString()); } } else {
-         * fields.add(f.name); } }
-         * 
-         * return fields;
-         */
         return this.fieldNames;
     }
 
     /** Returns the types for the query */
     public ArrayList getFieldTypes() {
-        /*
-         * ArrayList fields = new ArrayList(); Iterator it = names.keySet().iterator();
-         * FieldStore f; int i; StringBuffer buf = new StringBuffer(); int count = 0;
-         * while (it.hasNext()) { f = (FieldStore) names.get(it.next()); if (f.numVals >
-         * 0) { for (i = 0; i < f.numVals; i++) { buf.setLength(0); fields.add(new
-         * Integer(f.getType())); count++; } } else { fields.add(new
-         * Integer(f.getType())); count++; } }
-         * 
-         * int[] types = new int[count]; for (i = 0; i < count; i++) { types[i] =
-         * ((Integer) fields.get(i)).intValue(); }
-         * 
-         * return types;
-         */
         return this.fieldTypes;
     }
 
     /** Returns the results of the search */
-    public ArrayList getRows() {
+    public ArrayList<HashMap<String, Object>> getRows() {
         return rows;
     }
 
-    public void unpackJldap(LDAPSearchResults res, boolean dn, String fromContext, String baseContext, HashMap revMap)
-            throws SQLException {
-        ArrayList tmprows;
-        ArrayList expRows = null;
-
+    public void unpackJldap(LDAPSearchResults res, boolean dn, String fromContext, String baseContext,
+            HashMap<String, String> revMap) throws SQLException {
         this.queue = null;
         this.searchResults = res;
 
         this.revMap = revMap;
 
-        NamingEnumeration enumAtts;
-        Enumeration vals;
-        Attribute att;
-        String attrid;
-        String val;
-        // String dn;
-        FieldStore field;
+        buff = new StringBuffer();
+        String base;
+        names.clear();
+        rows.clear();
+
+        buff.setLength(0);
+        if (fromContext != null && fromContext.length() != 0)
+            buff.append(',').append(fromContext);
+        if (baseContext != null && baseContext.length() != 0)
+            buff.append(',').append(baseContext);
+
+        // base = buff.toString();
+
+        this.dn = dn;
+        this.fromContext = fromContext;
+        this.entry = null;
+
+        this.fieldNames = new ArrayList();
+        this.fieldTypes = new ArrayList();
+
+        this.hasMoreEntries = true;
+        if (con.isPreFetch()) {
+            int i = 0;
+            while (this.moveNext(i++))
+                ;
+        }
+    }
+
+    public void unpackJldap(LDAPMessageQueue queue, boolean dn, String fromContext, String baseContext,
+            HashMap<String, String> revMap) throws SQLException {
+        this.revMap = revMap;
+
+        this.queue = queue;
+        this.searchResults = null;
+
         StringBuffer buff = new StringBuffer();
         String base;
         names.clear();
         rows.clear();
-        int currNumVals;
-        HashMap row;
-        String[] svals;
-        LDAPEntry entry = null;
+        HashMap<String, Object> row;
         Iterator it;
-        byte[][] byteVals;
 
         buff.setLength(0);
         if (fromContext != null && fromContext.length() != 0)
@@ -180,7 +178,7 @@ public class UnpackResults {
         this.dn = dn;
         this.fromContext = fromContext;
         this.buff = buff;
-        this.entry = entry;
+        this.entry = null;
 
         this.fieldNames = new ArrayList();
 
@@ -196,60 +194,18 @@ public class UnpackResults {
 
     }
 
-    public void unpackJldap(LDAPMessageQueue queue, boolean dn, String fromContext, String baseContext, HashMap revMap)
-            throws SQLException {
-        ArrayList tmprows;
-        ArrayList expRows = null;
-        SearchResult res;
+    static LDAPSchema dirSchema = null;
 
-        this.revMap = revMap;
+    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
-        this.queue = queue;
-        this.searchResults = null;
-
-        NamingEnumeration enumAtts;
-        Enumeration vals;
-        Attribute att;
-        String attrid;
-        String val;
-        // String dn;
-        FieldStore field;
-        StringBuffer buff = new StringBuffer();
-        String base;
-        names.clear();
-        rows.clear();
-        int currNumVals;
-        HashMap row;
-        String[] svals;
-        LDAPEntry entry = null;
-        Iterator it;
-        byte[][] byteVals;
-
-        buff.setLength(0);
-        if (fromContext != null && fromContext.length() != 0)
-            buff.append(',').append(fromContext);
-        if (baseContext != null && baseContext.length() != 0)
-            buff.append(',').append(baseContext);
-
-        base = buff.toString();
-
-        this.dn = dn;
-        this.fromContext = fromContext;
-        this.buff = buff;
-        this.entry = entry;
-
-        this.fieldNames = new ArrayList();
-
-        this.fieldTypes = new ArrayList();
-
-        // this.results = new ResultListener(this,this.currentThread,queue);
-        this.hasMoreEntries = true;
-        if (con.isPreFetch()) {
-            int i = 0;
-            while (this.moveNext(i++))
-                ;
+    public static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
         }
-
+        return new String(hexChars);
     }
 
     /**
@@ -263,15 +219,12 @@ public class UnpackResults {
      */
     protected LDAPEntry extractEntry(boolean dn, String fromContext, StringBuffer buff, LDAPEntry entry)
             throws SQLNamingException {
-        ArrayList tmprows;
-        ArrayList expRows = null;
-        String val;
-        FieldStore field;
+        HashMap<String, Object> row;
+        ArrayList<HashMap<String, Object>> tmprows;
+        ArrayList<HashMap<String, Object>> expRows = null;
         int currNumVals;
-        HashMap row;
         String[] svals;
-        Iterator it;
-        byte[][] byteVals;
+        Iterator<HashMap<String, Object>> it;
 
         // System.out.println("entry : " + entry);
 
@@ -284,41 +237,43 @@ public class UnpackResults {
         }
 
         if (dn) {
-            field = (FieldStore) names.get(DN_ATT);
+            FieldStore field = names.get(DN_ATT);
             if (field == null) {
                 field = new FieldStore();
                 field.name = DN_ATT;
                 names.put(field.name, field);
-                this.fieldNames.add(DN_ATT);
-                this.fieldTypes.add(new Integer(field.type));
+                fieldNames.add(DN_ATT);
+                fieldTypes.add(new Integer(field.type));
             }
             buff.setLength(0);
-            // TODO, need to be able to handle unicode strings....
-            /*
-             * try { System.out.println("in unpack dn : " + cleanDn(res.getName())); } catch
-             * (Exception e) { e.printStackTrace(); }
-             */
-
-            // System.out.println("Unpack: dn="+buff);
-
             row.put(DN_ATT, LDAPDN.normalize(entry.getDN()));
+        }
+
+        if (dirSchema == null) {
+            dirSchema = new LDAPSchema();
+            try {
+                dirSchema = con.getConnection().fetchSchema(con.getConnection().getSchemaDN());
+            } catch (Exception e) {
+                System.err.println("Exception from dirSchema.fetchSchema");
+                throw new SQLNamingException(e);
+            }
         }
 
         // TODO figure out what the hell is going on here
         // it = atts.getAttributeNames().iterator();
         Object[] attribArray = atts.toArray();
         for (int j = 0, n = attribArray.length; j < n; j++) {
-
-            // String attribName = (String) it.next();
-            // System.out.println(atts);
-            // System.out.println("attribname : " + attribName);
-            LDAPAttribute attrib = (LDAPAttribute) attribArray[j]; // atts.getAttribute(attribName);
-            // System.out.println("working with : " + attrib);
-            field = (FieldStore) names.get(this.getFieldName(attrib.getName()));
+            LDAPAttribute attrib = (LDAPAttribute) attribArray[j];
+            LDAPAttributeSchema attrSchema = dirSchema.getAttributeSchema(attrib.getName());
+            String syntaxString = "";
+            if (attrSchema != null) {
+                syntaxString = attrSchema.getSyntaxString();
+            }
+            FieldStore field = names.get(getFieldName(attrib.getName()));
             boolean existed = true;
             if (field == null) {
                 field = new FieldStore();
-                field.name = this.getFieldName(attrib.getName());
+                field.name = getFieldName(attrib.getName());
                 names.put(field.name, field);
                 existed = false;
             }
@@ -327,20 +282,21 @@ public class UnpackResults {
             if (bval == null) {
                 bval = new byte[0];
             }
-            if (Base64.isLDIFSafe(bval)) {
-                svals = attrib.getStringValueArray();
-            } else {
-                byteVals = attrib.getByteValueArray();
+
+            svals = attrib.getStringValueArray();
+            if ("1.3.6.1.4.1.1466.115.121.1.40".equals(syntaxString)) {
+                byte[][] byteVals = attrib.getByteValueArray();
                 svals = new String[byteVals.length];
                 for (int i = 0, m = byteVals.length; i < m; i++) {
-                    svals[i] = Base64.encode(byteVals[i]);
+                    svals[i] = bytesToHex(byteVals[i]);
                 }
-
+            } else {
+                svals = attrib.getStringValueArray();
             }
 
             if (svals.length <= 1) {
                 if (con.isExpandRow()) {
-                    val = (svals.length != 0) ? svals[0] : "";
+                    String val = (svals.length != 0) ? svals[0] : "";
                     it = expRows.iterator();
                     while (it.hasNext()) {
                         field.determineType(val);
@@ -349,16 +305,16 @@ public class UnpackResults {
                     }
 
                     if (!existed) {
-                        this.fieldNames.add(field.name);
-                        this.fieldTypes.add(new Integer(field.type));
+                        fieldNames.add(field.name);
+                        fieldTypes.add(new Integer(field.type));
                     }
                 } else {
-                    val = svals[0];
+                    String val = svals[0];
                     field.determineType(val);
                     row.put(field.name, val);
                     if (!existed) {
-                        this.fieldNames.add(field.name);
-                        this.fieldTypes.add(new Integer(field.type));
+                        fieldNames.add(field.name);
+                        fieldTypes.add(new Integer(field.type));
                     }
                 }
             } else {
@@ -367,15 +323,15 @@ public class UnpackResults {
                     field.numVals = 0;
 
                     for (int i = 0, m = svals.length; i < m; i++) {
-                        val = svals[i];
+                        String val = svals[i];
                         field.determineType(val);
                         buff.append('[').append(val).append(']');
                     }
 
                     row.put(field.name, buff.toString());
                     if (!existed) {
-                        this.fieldNames.add(field.name);
-                        this.fieldTypes.add(new Integer(field.type));
+                        fieldNames.add(field.name);
+                        fieldTypes.add(new Integer(field.type));
                     }
                 } else if (con.isExpandRow()) {
 
@@ -383,12 +339,12 @@ public class UnpackResults {
 
                     for (int i = 0, m = svals.length; i < m; i++) {
 
-                        val = svals[i];
+                        String val = svals[i];
                         field.determineType(val);
                         it = expRows.iterator();
 
                         while (it.hasNext()) {
-                            row = (HashMap) it.next();
+                            row = it.next();
                             row = (HashMap) row.clone();
 
                             row.put(field.name, val);
@@ -398,8 +354,8 @@ public class UnpackResults {
                     }
 
                     if (!existed) {
-                        this.fieldNames.add(field.name);
-                        this.fieldTypes.add(new Integer(field.type));
+                        fieldNames.add(field.name);
+                        fieldTypes.add(new Integer(field.type));
                     }
 
                     expRows = tmprows;
@@ -408,16 +364,16 @@ public class UnpackResults {
                     int low = field.numVals;
                     for (int i = 0, m = svals.length; i < m; i++) {
                         buff.setLength(0);
-                        val = svals[i];
+                        String val = svals[i];
                         field.determineType(val);
                         row.put(buff.append(field.name).append('_').append(currNumVals).toString(), val);
                         currNumVals++;
 
                         String fieldName = field.name + "_" + Integer.toString(currNumVals - 1);
 
-                        if (currNumVals >= low && !this.fieldNames.contains(fieldName)) {
-                            this.fieldNames.add(fieldName);
-                            this.fieldTypes.add(new Integer(field.type));
+                        if (currNumVals >= low && !fieldNames.contains(fieldName)) {
+                            fieldNames.add(fieldName);
+                            fieldTypes.add(new Integer(field.type));
                         }
 
                     }
@@ -484,9 +440,8 @@ public class UnpackResults {
         StringBuffer buf = new StringBuffer(dn);
         int begin, end;
         begin = buf.indexOf("\\");
-        String val;
         while (begin != -1) {
-            val = (String) UnpackResults.HEX_TO_STRING.get(buf.substring(begin, begin + 3));
+            String val = (String) UnpackResults.HEX_TO_STRING.get(buf.substring(begin, begin + 3));
             if (val != null) {
                 buf.replace(begin, begin + 3, val);
             }
@@ -506,11 +461,11 @@ public class UnpackResults {
      */
     public boolean moveNext(int index) throws SQLNamingException {
 
-        if (index >= this.rows.size()) {
-            if (this.hasMoreEntries) {
+        if (index >= rows.size()) {
+            if (hasMoreEntries) {
                 getNextEntry();
 
-                return this.hasMoreEntries;
+                return hasMoreEntries;
             } else {
                 return false;
             }
@@ -523,7 +478,7 @@ public class UnpackResults {
      * @throws SQLNamingException
      */
     protected void getNextEntry() throws SQLNamingException {
-        if (this.queue != null) {
+        if (queue != null) {
             getNextQueue();
         } else {
             getNextResults();
@@ -577,7 +532,7 @@ public class UnpackResults {
             // System.out.println("Message : " + message.getClass().getName());
             LDAPResponse resp = (LDAPResponse) message;
             if (resp.getResultCode() == LDAPException.SUCCESS) {
-                this.hasMoreEntries = false;
+                hasMoreEntries = false;
 
             } else {
                 throw new SQLNamingException(new LDAPException(resp.getErrorMessage(), resp.getResultCode(),
@@ -592,15 +547,15 @@ public class UnpackResults {
     private void getNextResults() throws SQLNamingException {
         LDAPMessage message;
 
-        if (!this.searchResults.hasMore()) {
-            this.hasMoreEntries = false;
+        if (!searchResults.hasMore()) {
+            hasMoreEntries = false;
             return;
         }
 
         try {
-            entry = this.searchResults.next();
+            entry = searchResults.next();
 
-            if (this.con.isSPML()) {
+            if (con.isSPML()) {
                 String name = entry.getDN();
                 entry = new LDAPEntry(name + ",ou=Users," + con.getBaseContext(), entry.getAttributeSet());
             }
@@ -642,8 +597,8 @@ public class UnpackResults {
 
     private String getFieldName(String name) {
 
-        if (this.revMap != null) {
-            String nname = (String) this.revMap.get(name);
+        if (revMap != null) {
+            String nname = (String) revMap.get(name);
             if (nname != null) {
                 return nname;
             }

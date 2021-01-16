@@ -20,10 +20,14 @@
 
 package com.octetstring.jdbcLdap.sql;
 
-import java.sql.*;
-import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
-import java.util.*;
+import java.sql.DriverManager;
+import java.sql.DriverPropertyInfo;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
+
+import com.octetstring.jdbcLdap.jndi.JndiLdapConnection;
 
 /**
  * Establishes a JNDI connection to an LDAP store. URLs are in the form :<br>
@@ -45,10 +49,10 @@ public class JdbcLdapDriver implements java.sql.Driver {
     public static final String SPML_URL_ID = "jdbc:spml";
 
     /** Major Version of driver */
-    public static final int MAJOR_VERSION = 0;
+    public static final int MAJOR_VERSION = 1;
 
     /** Minor Version of driver */
-    public static final int MINOR_VERSION = 99;
+    public static final int MINOR_VERSION = 1;
 
     /** Is JDBC Type IV Driver? */
     public static final boolean JDBC_IV = false;
